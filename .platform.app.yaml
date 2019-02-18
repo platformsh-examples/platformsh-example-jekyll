@@ -9,12 +9,9 @@ type: 'ruby:2.5'
 # The hooks that will be triggered when the package is deployed.
 hooks:
     # Build hooks can modify the application files on disk but not access any services like databases.
-    build: jekyll build
-dependencies:
-    ruby:
-        jekyll: '~> 3.8.5'
-        minima: '~> 2.0'
-        jekyll-feed: '~> 0.6'
+    build: |
+        bundle install
+        bundle exec jekyll build
 
 # The size of the persistent disk of the application (in MB).
 disk: 5120
