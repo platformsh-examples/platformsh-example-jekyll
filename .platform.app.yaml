@@ -1,16 +1,20 @@
 # .platform.app.yaml
 
 # The name of this application, which must be unique within a project.
-name: 'gatsbyjs'
+name: 'jekyll'
 
 # The type key specifies the language and version for your application.
-type: 'nodejs:8.9'
+type: 'ruby:2.5'
+
+dependencies:
+    ruby: # Specify one Bundler package per line.
+        jekyll: "*"
 
 # The hooks that will be triggered when the package is deployed.
 hooks:
     # Build hooks can modify the application files on disk but not access any services like databases.
     build: |
-      npm run build
+      bundle exec jekyll build
 
 # The size of the persistent disk of the application (in MB).
 disk: 5120
@@ -20,7 +24,7 @@ web:
     locations:
         '/':
             # The public directory of the application relative to its root.
-            root: 'public'
+            root: '_site'
             index: ['index.html']
             scripts: false
             allow: true
