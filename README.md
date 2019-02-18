@@ -174,7 +174,11 @@ git push platform master
 Let's review the ouput of your `push`. The first part is basic git. Files and commits are getting pushed to the remote:
 
 ```sh
-
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 613 bytes | 613.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
 ```
 
 Platform.sh then analyze your repository, pull submodules and validate your configuration syntax:
@@ -188,15 +192,50 @@ Validating configuration files
 The most important part is now to build your container image (the `build` hook). It will execute the `npm run build` we defined. As there is a `package.json` file in the folder, Platform.sh also launch an `install`
 
 ```sh
+Processing activity: Guillaume Moigneu pushed to Master
+    Found 4 new commits
 
+    Building application 'jekyll' (runtime type: ruby:2.5, tree: db94bb7)
+      Generating runtime configuration.
+      
+      Executing build hook...
+        The dependency tzinfo-data (>= 0) will be unused by any of the platforms Bundler is installing for. Bundler is installing for ruby but the dependency is only for x86-mingw32, x86-mswin32, x64-mingw32, java. To add those platforms to the bundle, run `bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java`.
+        Fetching gem metadata from https://rubygems.org/...........
+        Fetching public_suffix 3.0.3
+        Installing public_suffix 3.0.3
+        ...
+        Configuration file: /app/_config.yml
+                    Source: /app
+               Destination: /app/_site
+         Incremental build: disabled. Enable with --incremental
+              Generating... 
+               Jekyll Feed: Generating feed for posts
+                            done in 0.424 seconds.
+         Auto-regeneration: disabled. Use --watch to enable.
+      
+      Executing pre-flight checks...
+
+      Compressing application.
+      Beaming package to its final destination.
 ```
 
 Platform.sh then checks that everything seems correct and deploys the container to a host. You'll see that Platform.sh also generates the Let's Encrypt TLS certificate for your project. 
 
 ```sh
+Provisioning certificates
+Environment certificates
+- certificate 43e7fdd: expiring on 2019-05-19 13:12:37+00:00, covering master-7rqtwti-<project ID>.<region>.platformsh.site
 
+
+Re-deploying environment <project ID>-master-7rqtwti
+Environment configuration
+  jekyll (type: ruby:2.5, size: S, disk: 5120)
+
+Environment routes
+  http://master-7rqtwti-<project ID>.<region>.platformsh.site/ redirects to https://master-7rqtwti-<project ID>.<region>.platformsh.site/
+  https://master-7rqtwti-<project ID>.<region>.platformsh.site/ is served by application `jekyll`
 ```
 
 The last output is the new URL of your application. You can also check that the project has been successully deployed on the web interface:
 
-Now go the URL and you will be able to see your Jekyll site
+Now go the URL and you will be able to see your Jekyll site.
