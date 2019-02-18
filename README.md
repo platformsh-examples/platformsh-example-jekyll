@@ -105,16 +105,12 @@ name: 'jekyll'
 # The type key specifies the language and version for your application.
 type: 'ruby:2.5'
 
-dependencies:
-    ruby: # Specify one Bundler package per line.
-        bundler: "*"
-        jekyll: "*"
-
 # The hooks that will be triggered when the package is deployed.
 hooks:
     # Build hooks can modify the application files on disk but not access any services like databases.
     build: |
-      bundle exec jekyll build
+        bundle install
+        bundle exec jekyll build
 
 # The size of the persistent disk of the application (in MB).
 disk: 5120
@@ -145,10 +141,25 @@ Add `routes.yaml` in the `.platform` folder and add the following configuration:
   upstream: "jekyll:http"
 ```
 
-This file tells the platform router to direct all incoming requests to our `jekyll` container. Commit these new files:
+This file tells the platform router to direct all incoming requests to our `jekyll` container.
+
+The last step is to create the appropriate `Gemfile` for our dependencies:
+
+```yaml
+source "https://rubygems.org"
+gem "jekyll", "~> 3.8.5"
+gem "minima", "~> 2.0"
+group :jekyll_plugins do
+  gem "jekyll-feed", "~> 0.6"
+end
+gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem "wdm", "~> 0.1.0" if Gem.win_platform?
+```
+
+ Commit these new files:
 
 ```sh
-git add .platform.app.yaml .platform
+git add .platform.app.yaml .platform Gemfile
 git commit -m "Add platform.sh configuration"
 ```
 
@@ -163,11 +174,7 @@ git push platform master
 Let's review the ouput of your `push`. The first part is basic git. Files and commits are getting pushed to the remote:
 
 ```sh
-Counting objects: 44, done.
-Delta compression using up to 4 threads.
-Compressing objects: 100% (38/38), done.
-Writing objects: 100% (44/44), 1.04 MiB | 16.98 MiB/s, done.
-Total 44 (delta 2), reused 0 (delta 0)
+
 ```
 
 Platform.sh then analyze your repository, pull submodules and validate your configuration syntax:
@@ -181,73 +188,13 @@ Validating configuration files
 The most important part is now to build your container image (the `build` hook). It will execute the `npm run build` we defined. As there is a `package.json` file in the folder, Platform.sh also launch an `install`
 
 ```sh
-Building application 'jekyll' (runtime type: nodejs:8.9, tree: fafb3d4)
-      Generating runtime configuration.
-      
-      Building a NodeJS application, let's make it fly.
-      Found a `package.json`, installing dependencies.
-        
-        > sharp@0.21.3 install node_modules/sharp
-        > (node install/libvips && node install/dll-copy && prebuild-install) || (node-gyp rebuild && node install/dll-copy)
-        ...
-        up to date in 14.102s
 
-        success open and validate gatsby-configs — 0.009 s
-        success load plugins — 0.325 s
-        success onPreInit — 0.895 s
-        success delete html and css files from previous builds — 0.096 s
-        success initialize cache — 0.016 s
-        success copy gatsby files — 0.024 s
-        success onPreBootstrap — 0.006 s
-        success source and transform nodes — 0.104 s
-        success building schema — 0.326 s
-        success createPages — 0.056 s
-        success createPagesStatefully — 0.032 s
-        success onPreExtractQueries — 0.004 s
-        success update schema — 0.185 s
-        success extract queries from components — 0.134 s
-        
-        success run graphql queries — 0.694 s — 9/9 13.00 queries/second
-        success write out page data — 0.012 s
-        success write out redirect data — 0.001 s
-        
-        
-        
-        info bootstrap finished - 5.674 s
-        
-        done generating icons for manifest
-        success onPostBootstrap — 0.287 s
-        success Building production JavaScript and CSS bundles — 11.784 s
-        success Building static HTML for pages — 0.844 s — 7/7 28.27 pages/second
-        Generated public/sw.js, which will precache 11 files, totaling 283621 bytes.
-        info Done building in 18.685 sec
 ```
 
 Platform.sh then checks that everything seems correct and deploys the container to a host. You'll see that Platform.sh also generates the Let's Encrypt TLS certificate for your project. 
 
 ```sh
-      Executing pre-flight checks...
 
-      Compressing application.
-      Beaming package to its final destination.
-
-    W: Route '{default}' doesn't map to a domain of the project, mangling the route.
-
-    Provisioning certificates
-      Validating 1 new domain
-      Provisioned new certificate for 1 domains of this environment
-      (Next refresh will be at 2019-04-20 20:19:01+00:00.)
-      Environment certificates
-      - certificate 18bf626: expiring on 2019-05-18 20:19:01+00:00, covering master-7rqtwti-<project ID>.<region>.platformsh.site
-
-
-    Creating environment <project ID>-master-7rqtwti
-      Environment configuration
-        jekyll (type: nodejs:8.9, size: M, disk: 5120)
-
-      Environment routes
-        http://master-7rqtwti-<project ID>.<region>.platformsh.site/ redirects to https://master-7rqtwti-<project ID>.<region>.platformsh.site/
-        https://master-7rqtwti-<project ID>.<region>.platformsh.site/ is served by application `jekyll`
 ```
 
 The last output is the new URL of your application. You can also check that the project has been successully deployed on the web interface:
