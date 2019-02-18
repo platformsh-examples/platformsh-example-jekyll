@@ -8,7 +8,7 @@ type: 'ruby:2.5'
 
 dependencies:
     ruby: # Specify one Bundler package per line.
-        bundler: "*"
+        bundler: "2.0.1"
         jekyll: "*"
 
 # The hooks that will be triggered when the package is deployed.
