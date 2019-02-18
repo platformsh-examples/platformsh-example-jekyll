@@ -4,7 +4,7 @@
 
 ## 1. Setup your local machine
 
-You'll need 3 tools to deploy your Hugo site on Platform.sh:
+You'll need 3 tools to deploy your Jekyll site on Platform.sh:
 
 - ruby and rubygem: [install git](https://nodejs.org/en/)
 - jekyll: `sudo gem install bundler jekyll`
